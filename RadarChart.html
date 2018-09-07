@@ -1,0 +1,88 @@
+
+<html>
+        
+        
+        <head>
+               
+                
+
+    
+      <!-- <script type="text/javascript" src="http://d3js.org/d3.v3.js"></script>  
+      -->
+      <script src = "https://d3js.org/d3.v4.min.js"></script>
+      <script src = "js/D3RadarChart.js"></script>
+   </head>
+
+
+
+<body>
+            <div>    
+                 <div id="chart-container"></div>
+
+
+            </div>
+            
+    
+
+      <script>
+
+                
+            var data = [
+            {
+                className: 'germany', // optional, can be used for styling
+                axes: [
+                {axis: "strength", value: 13},
+                {axis: "intelligence", value: 13},
+                {axis: "charisma", value: 13},  
+                {axis: "dexterity", value: 13},  
+                {axis: "luck", value: 13, xOffset: -20}
+                ],
+                color: "#AED6F1"
+                
+            
+            },
+            {
+                className: 'argentina',
+                axes: [
+                {axis: "strength", value: 10},
+                {axis: "intelligence", value: 10},
+                {axis: "charisma", value: 10},  
+                {axis: "dexterity", value: 10},  
+                {axis: "luck", value: 10}
+                ],
+               // fillOpacity : 1,
+                color: "#FFFFFF"
+            },
+            {
+                className: 'argentina',
+                axes: [
+                {axis: "strength", value: 6},
+                {axis: "intelligence", value: 6},
+                {axis: "charisma", value: 6},  
+                {axis: "dexterity", value: 6},  
+                {axis: "luck", value: 6}
+                ],
+                fillOpacity : 0, 
+                color: "#C62828"
+            }
+            ];
+       
+           // JRadarChart.generateChart( "myChart", data );
+
+            JRadarChart.generateChart( "#chart-container","#chart-container", data , 1);
+
+ 
+
+      </script>
+
+
+        
+            
+
+
+ 
+     
+
+       
+   </body>
+</html>

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang = "en">
+   <head>
+      <script src = "https://d3js.org/d3.v4.min.js"></script>
+      <script src = "js/JChart.js"></script>
+   </head>
+
+
+
+<body>
+    <div>    <div    id="myChart">
+        
+             </div>
+            </div>
+            
+    
+
+      <script>
+
+        //   var data = {
+        //       min: 51.0123,
+        //       max: 63.4482,
+        //       leftLabel: "51.0123",
+        //       rightLabel: "63.4482",
+        //       axis: 
+        //       [
+        //         {
+        //             value :51.0123, key: "Left"
+        //         } ,
+        //         {
+        //             value : 55.8434, key: "Right"
+        //         } 
+                 
+                
+        //       ],
+        //        lowerBound: 51.0123,
+        //        upperBound: 52.0123,
+              
+        //       bottomLabel: "Stride Length (%)"
+        //   };
+
+        var data = {
+              min: 0.2020,
+              max: 0.8080,
+              leftLabel: "0.2020",
+              rightLabel: "0.8080",
+              axis: 
+              [
+                {
+                    value :0.355, key: "Left"
+                }
+                ,
+                
+                {
+                    value : 0.5567, key: "Right"
+                } 
+                
+                
+              ],
+                lowerBound: 0.3020,
+                upperBound: 0.4020,
+                confidence: "95% Normative Data",
+                bottomLabel: "Stride Length (%)"
+          };
+
+          var config = 
+          {
+              showLegend: true,
+              showBottomLabel: true,
+              showTopLegends : false
+          };
+
+          JChart.generateGaugeChart( "myChart" , data, config );
+         //JChart.generateGaugeChart( "myChart" , undefined, undefined, true );
+
+
+
+        //   var data1 = {
+        //       min:0,
+        //       max:100,
+        //       leftLabel: "0",
+        //       rightLabel: "100",
+        //       axis: 
+        //       [
+                 
+        //         {
+        //             value : 10, key: "right"
+        //         },
+        //         {
+        //             value : 50, key: "right"
+        //         }   
+        //         ,
+        //         {
+        //             value : 90, key: "right"
+        //         }   
+                 
+                
+        //       ],
+        //       confidence: 50,
+        //       bottomLabel: "Stride Length (%)"
+        //   };
+
+        //   var config1 = 
+        //   {
+        //       showLegend: true,
+        //       showBottomLabel: true,
+        //       showTopLegends : false
+        //   };
+
+        //   JChart.generateGaugeChart( "myChart1" , data1, config1 );
+
+      </script>
+
+
+        
+            
+
+
+ 
+     
+
+       
+   </body>
+</html>
