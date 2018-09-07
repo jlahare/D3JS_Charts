@@ -459,7 +459,11 @@ if(showNiddleValue)
          
          var pl = divElement.selectAll(elementName+"polygon" + n)
          .data([poly])
-         .enter().append("polygon")
+         .enter().append("polygon").transition()
+         .ease(d3.easeElastic)
+         //.delay(100)
+         .duration(5000)
+         .attr("transform", "rotate("+stAng+")")
          .attr("points",function(d) { 
              return d.map(function(d) {
                  //return [scaleX(d.x),scaleY(d.y)].join(",");
@@ -470,12 +474,10 @@ if(showNiddleValue)
          .attr("fill",JColors[n])
          .attr("stroke-width",0.5)
          .attr("transform", "rotate("+stAng+")");
-
-       
+      
    }
    
-
-  
+ 
 
  
   
