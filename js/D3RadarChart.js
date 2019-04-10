@@ -5,7 +5,7 @@
  * @version 1.0.0
  * @author  Jayesh Lahare
  * @created 27 Aug 2018
- * @updated 05 Sep 2018
+ * @updated 25 Sep 2018
  * @link    www.yash.com
  * 
  */
@@ -39,8 +39,8 @@ function JRadarChart()
 
 };
 
-//JRadarChart.generateChart = function(d3js, id,tipId, data , maxNumber)
-JRadarChart.generateChart = function( id,tipId, data , maxNumber)
+JRadarChart.generateChart = function(id,tipId, data , maxNumber , Width, Height)
+//JRadarChart.generateChart = function( id,tipId, data , maxNumber)
 {
      //this.d3  = d3js;
    
@@ -52,6 +52,15 @@ JRadarChart.generateChart = function( id,tipId, data , maxNumber)
       ExtraWidthX: 0
     }
 
+    if(Width !=null && Width!= undefined)
+    {
+      mycfg.w = Width;
+    }
+    if(Height !=null && Height!= undefined)
+    {
+      mycfg.h = Height;
+    }
+
  
    // RadarChart.draw(id,tipId,d3js, data, mycfg);
     RadarChart.draw(id,tipId, data, mycfg);
@@ -61,7 +70,7 @@ JRadarChart.generateChart = function( id,tipId, data , maxNumber)
 var RadarChart = {
   //draw: function(id,tipId,d3, data, options) {
   draw: function(id,tipId, data, options) {
-
+d3.selectAll(id).selectAll("svg").remove();
     // add touch to mouseover and mouseout
     var over = "ontouchstart" in window ? "touchstart" : "mousemove"; //"mouseover";
     var out = "ontouchstart" in window ? "touchend" : "mouseout";
@@ -229,6 +238,7 @@ var RadarChart = {
       if (config.showLevels) buildLevels(); //Repeating again for illusion
       if (config.showAxes) buildAxes(); //Repeating again for illusion
       if (config.showLevelsLabels) buildLevelsLabels();
+      if (config.showVertices) buildVertices(data); //Label Values here
     }
 
     // build main vis components

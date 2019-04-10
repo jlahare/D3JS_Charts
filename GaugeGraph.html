@@ -40,27 +40,44 @@
         //   };
 
         var data = {
-              min: 0.2020,
-              max: 0.8080,
-              leftLabel: "0.2020",
-              rightLabel: "0.8080",
+              min: 0,
+              max: 135,
+              leftLabel: "0",
+              rightLabel: "135",
               axis: 
               [
                 {
-                    value :0.355, key: "Left"
+                    value :45, key: "Left"
                 }
                 ,
                 
                 {
-                    value : 0.5567, key: "Right"
+                    value : 87, key: "Right"
                 } 
                 
                 
               ],
-                lowerBound: 0.3020,
-                upperBound: 0.4020,
-                confidence: "95% Normative Data",
-                bottomLabel: "Stride Length (%)"
+                lowerBound: 25,
+                upperBound: 50,
+               
+                colorStrips:
+                [
+                    {
+                        strip_min: 0,
+                        strip_max: 24,
+                        color : "#27AE60" //GREEN
+                    },
+                    {
+                        strip_min: 25,
+                        strip_max: 50,
+                        color : "#F7DC6F" //YELLOW
+                    },
+                    {
+                        strip_min: 51,
+                        strip_max: 135,
+                        color : "#E74C3C" //RED
+                    }
+                ]
           };
 
           var config = 

@@ -5,7 +5,7 @@
  * @version 1.0.0
  * @author  Jayesh Lahare
  * @created 02 July 2018
- * @updated 20 Aug 2018
+ * @updated 10 Oct 2018
  * @link    www.yash.com
  * 
  */
@@ -40,7 +40,9 @@ function JChart()
 
 JChart.generateGaugeChart = function (elementName , data , config, showNull)
 {
+  
    // d3.select("#"+elementName).selectAll("svg > *").remove();
+   
     d3.selectAll("#"+elementName).selectAll("svg").remove();
 
     var showNiddleValue = false;
@@ -77,11 +79,13 @@ JChart.generateGaugeChart = function (elementName , data , config, showNull)
   
     var labelTextLengthHeight = 0;
 
+    var decimalPlaceLength = 2;
+    
+    var roundOff = false;
+    var isBlackAndWhite = false;
+
     if(config !== undefined)
     {
-       // console.log("showLegend : " + config.showLegend);
-       // console.log("showBottomLabel : " + config.showBottomLabel);
-        
         if(config.showLegend !== undefined && config.showLegend==false)
         {
             if(data.confidence == undefined)
@@ -98,28 +102,37 @@ JChart.generateGaugeChart = function (elementName , data , config, showNull)
         }else
         {
             bottomLabelHeight = 0;
-        }       
+        }  
+        
+        if(config.printInGray !== undefined && config.printInGray == true)
+        {
+            isBlackAndWhite = true;
+        }
     }
     else
     {
         //console.log("config is null");
     }
 
-    
- 
-   // console.log(lowerBound + "  ,  " + upperBound);
-
-  
-   
+      
        var marginLeft = width/2 - arcRadius - labelOffset;
     
+        
 
 
   var tooltipDiv = d3.select("#"+elementName) .append("div")	
+  //var tooltipDiv = d3.select("body") .append("div")	
    // .attr("class", "tooltip")				
     .style("opacity", 0)
-    .style("position", "absolute")			
-    .style("padding", "2px")				
+    //.style("position", "absolute")			
+    .style("padding", "2px")
+
+    .style("position", "fixed")			
+    .style("left", "0px")		
+    .style("top", "0px")			
+	
+
+    
     .style("font", "12px sans-serif")		
     .style("background", "rgba(254, 255, 254, 0.5)")
     .style("border", "1px solid gray")		
@@ -133,7 +146,9 @@ JChart.generateGaugeChart = function (elementName , data , config, showNull)
     if(data==undefined || data.axis==undefined ||  data.axis.length<= 0 || (showNull!=undefined && showNull==true) || isDataValid(data)==false)
     {
         noData = true;
-        width = width/2;
+       width = width/2 + 40;
+      // marginLeft = 0;
+         
     }
 
     var svgDiv = d3.select("#"+elementName) 
@@ -142,8 +157,12 @@ JChart.generateGaugeChart = function (elementName , data , config, showNull)
     .attr("height", height);
 
    
-    var divElement =  svgDiv.append("g")
-    .attr("transform", "translate(" + (width/2-marginLeft+labelTextLengthHeight) + "," + (height-holoRadius-10-bottomLabelHeight)  +  ")");
+    var divElement =  svgDiv.append("g");
+
+    if(noData == false)
+    {
+        divElement.attr("transform", "translate(" + (width/2-marginLeft+labelTextLengthHeight) + "," + (height-holoRadius-10-bottomLabelHeight)  +  ")");
+    }
 
     if(noData == true)
     {
@@ -166,27 +185,50 @@ JChart.generateGaugeChart = function (elementName , data , config, showNull)
                         .each(function(d,i) 
                         {
                             noTxtWidth = this.getComputedTextLength()
-                            //console.log("Bottom Text Width at " +i + " Is " + noTxtWidth);
-                            
+                             
                             this.remove(); // remove them just after displaying them
+
+                            divElement.append('text')
+                            .attr('x', width/2 - noTxtWidth/2)
+                            .attr('y',height/2-20)
+                           // .attr('dy', '1em')
+                           // .attr('dx', '2em')
+                            //.attr('text-anchor', 'middle')
+                            //.attr("startOffset", "10%")
+                            .style("font-size", legendFontSize+5)
+                            .style('font-family', 'open_sanssemibold')
+                            .style('font-weight', 'normal')
+                            .text("No Data Available.");
+                        
+                         
+
                         });
                     // TEXT WIDTH CALCULATION ENDS 
 
-                        //console.log("OutSide Bottom Text Width at    Is " + noTxtWidth);
-
-                        divElement.append('text')
-                        .attr('x', 0)
-                        .attr('y',-holoRadius-10-bottomLabelHeight)
-                       // .attr('dy', '1em')
-                       // .attr('dx', '2em')
-                        //.attr('text-anchor', 'middle')
-                        //.attr("startOffset", "10%")
-                        .style("font-size", legendFontSize+5)
-                        .style('font-family', 'open_sanssemibold')
-                        .style('font-weight', 'normal')
-                        .text("No Data Available.");
+ 
+                    //     divElement.append('text')
+                    //     .attr('x', 0)
+                    //     .attr('y',-holoRadius-10-bottomLabelHeight)
+                    //    // .attr('dy', '1em')
+                    //    // .attr('dx', '2em')
+                    //     //.attr('text-anchor', 'middle')
+                    //     //.attr("startOffset", "10%")
+                    //     .style("font-size", legendFontSize+5)
+                    //     .style('font-family', 'open_sanssemibold')
+                    //     .style('font-weight', 'normal')
+                    //     .text("No Data Available.");
                     
         return;
+    }
+
+    if(data.decimalPlaces!= undefined)
+    {
+        decimalPlaceLength = data.decimalPlaces;
+    }
+
+    if(data.roundOff != undefined && data.roundOff == true)
+    {
+        roundOff = true;
     }
 
     var niddleCounts = data.axis.length;
@@ -217,39 +259,37 @@ JChart.generateGaugeChart = function (elementName , data , config, showNull)
              html +=  "<tr style='padding: 0px; margin: 0px;'>";
              html +=  "<td style='maring:0px; padding:0px;'><p style='padding: 0px; margin: 0px; width:10px; height: 10px; background-color:"+ JColors[i] +"; border: 1px solid darkgray;'></p></td>";
              html +=  "<td style='padding:0px; margin: 0px; text-align:left;'><span style='padding: 0px; margin: 0px; margin-left: 5px; text-align:left;'>" + data.axis[i].key+ "</span></td>";
-             html += "<td style='padding: 0; margin: 0; text-align:left;'><span style='margin-left: 5px'><b>" + data.axis[i].value + "</b></span></td></tr>";
+             html += "<td style='padding: 0; margin: 0; text-align:left;'><span style='margin-left: 5px'><b>" + getRounded(data.axis[i].value, decimalPlaceLength, roundOff) + "</b></span></td></tr>";
      }
    html += "</table></div>";
    
-    divElement.on("mousemove", function(d) 
+    //divElement
+    svgDiv.on("mousemove", function(d) 
     {		
       
        var coordinates = [0, 0];
-       coordinates = d3.mouse(this);
+
+      
+
+       coordinates = d3.mouse(svgDiv.node());
+       //coordinates = d3.mouse(this);
        var x = Math.abs(coordinates[0]);
        var y = Math.abs(coordinates[1]);
-       //console.log("Inside mousemove " +  x + " , " + y);
-
-        // D3 v4
-        //var dx = d3.event.pageX - document.getElementById(elementName).getBoundingClientRect().x + 10
-        //var dy = d3.event.pageY - document.getElementById(elementName).getBoundingClientRect().y + 10
-        //console.log("Inside mousemove d: " +  dx + " , " + dy);
+  
 
         tooltipDiv.transition()		
             .duration(200)		
             .style("opacity", .99);		
 
             tooltipDiv	.html( html )	
-            .style("left", (x) + "px")		
-            .style("top", (y) + "px");	
+            //.style("left", (x) + "px")		
+           //.style("top", (y) + "px");	
 
-        // tooltipDiv	.html( html )	
-        //     .style("left", (d3.event.pageX) + "px")		
-        //     .style("top", (d3.event.pageY - 28) + "px");	
+           .style("transform","translate("+(d3.event.x+20)+"px , " + d3.event.y + "px)");
+     
         })
    				
     .on("mouseout", function(d) {		
-       // console.log("Inside mouseout");
         tooltipDiv.transition()		
             .duration(500)		
             .style("opacity", 0);	
@@ -260,11 +300,7 @@ JChart.generateGaugeChart = function (elementName , data , config, showNull)
     var nW = 5;
     var st = 0
     var diff = -0.02;
-    
-    // var SERIES_MIN = data.min + Math.abs(START_ANGLE);
-    // var SERIES_MAX = data.max - Math.abs(END_ANGLE);
-
-    // var sampleSize = (SERIES_MAX - SERIES_MIN) / (data.max - data.min);
+ 
 
     var sampleSize = (data.max - data.min) / 9; // 9 because i m doing 10 parts
 
@@ -285,8 +321,8 @@ JChart.generateGaugeChart = function (elementName , data , config, showNull)
     // {
     //     arr.push( data.axis[i].value);
     // }
-    arr.push(getRounded( data.leftLabel));
-    arr.push(getRounded( data.rightLabel));
+    arr.push(getRounded( data.leftLabel , decimalPlaceLength, roundOff));
+    arr.push(getRounded( data.rightLabel , decimalPlaceLength, roundOff));
    
     let maxDiff = 1;
     divElement.append('g')
@@ -301,8 +337,7 @@ JChart.generateGaugeChart = function (elementName , data , config, showNull)
     .each(function(d,i) 
     {
         var thisWidth = this.getComputedTextLength()
-       // console.log("Text Width at " +i + " Is " + thisWidth);
-        maxDiff = thisWidth;
+         maxDiff = thisWidth;
         this.remove() // remove them just after displaying them
     });
 
@@ -355,6 +390,8 @@ if(showNiddleValue)
        
  }
 */
+ 
+
 
   // MAIN ARC DRAWING 
    var mainArc = d3.arc()
@@ -369,8 +406,7 @@ if(showNiddleValue)
     // .attr("stroke-width", 30)
      .attr("stroke", "#EAECEE")
      .attr("d", mainArc);
-  
-   
+     
 
     // CONFIDANCE ARC CALCULATION
  
@@ -409,6 +445,41 @@ if(showNiddleValue)
      .attr("d", confidanceArc);
       
     
+     //COLOR STRIP PRINTING LOGIC - START :
+     if(data.colorStrips !== undefined)
+     {
+         try
+         {
+              for(let i =0 ; i< data.colorStrips.length ; i++)
+              {
+                let stripLowerPosition = (data.colorStrips[i].strip_min - data.min) / sampleSize;
+                let stripStartPoint = START_ANGLE + (actualSample * stripLowerPosition);
+            
+                let stripUpperPosition = (data.colorStrips[i].strip_max - data.min) / sampleSize;
+                let stripEndPoint = START_ANGLE + (actualSample * stripUpperPosition);
+
+                var stripArc = d3.arc()
+                .startAngle(stripStartPoint)
+                .endAngle(stripEndPoint)
+                .innerRadius(0)
+                .outerRadius(arcRadius);
+               
+                 
+                var stripSector = divElement.append("path")
+                .attr("fill", data.colorStrips[i].color)
+                .attr("id", "strip"+i)
+                //.attr("stroke", confidanceColor)
+                .attr("d", stripArc);
+
+              }  
+         }catch(error)
+         {
+             console.error("Color Strip Error : " + error);
+         }
+     }
+     
+
+
     
       // CIRLCE CREATING HOLLOW ARC
        divElement.append("circle")
@@ -436,7 +507,6 @@ if(showNiddleValue)
         
 
         var sector = divElement.append("path")
-       
         .attr("fill", JColors[n])
         .attr("id", "niddle"+n)
         .attr("stroke", JColors[n])
@@ -457,6 +527,12 @@ if(showNiddleValue)
          let asp = (Math.abs(-90) + Math.abs(90)) / 9; // 9 because 10 samples
          let stAng = -90 + (asp * po);
          
+         let niddleColor = JColors[n];
+
+         if(isBlackAndWhite==true)
+         {
+             niddleColor = "#000000";
+         }
          var pl = divElement.selectAll(elementName+"polygon" + n)
          .data([poly])
          .enter().append("polygon").transition()
@@ -470,27 +546,32 @@ if(showNiddleValue)
                  return [ d.x , d.y ].join(",");
              }).join(" ");
          })
-         .attr("stroke",JColors[n])
-         .attr("fill",JColors[n])
+         .attr("stroke",niddleColor)
+         .attr("fill",niddleColor)
          .attr("stroke-width",0.5)
          .attr("transform", "rotate("+stAng+")");
-      
+
+       
    }
    
- 
 
  
-  
 
  //---------SHADOW CIRCLE CODE
  defineShadowFilter(divElement);
+
+ divElement.append("circle")
+ .attr("cx", 0)
+ .attr("cy", 0)
+ .attr("r", holoRadius+0.5)
+ .attr("fill", "lightgray");
 
 divElement.append("circle")
 .attr("cx", 0)
 .attr("cy", 0)
 .attr("r", holoRadius)
 .style("filter", "url(#drop-shadow)")
-.attr("fill", "white");
+.attr("fill", "#f7f7f7");
 
 //-- LEFT LABEL 
 divElement.append('text')
@@ -500,7 +581,7 @@ divElement.append('text')
 //.attr('dx', '0.5em')
 //.attr('text-anchor', 'middle')
 .attr("startOffset", "10%")
-.text(getRounded(leftLabel))
+.text(getRounded(leftLabel , decimalPlaceLength, roundOff))
 .style("font-size", legendFontSize)
 .style('font-family', 'open_sansregular')
 .style('font-weight', 'normal')
@@ -516,7 +597,7 @@ divElement.append('text')
 .style("font-size", legendFontSize)
 //.attr('text-anchor', 'middle')
 //.attr("startOffset", "10%")
-.text(getRounded(rightLabel))
+.text(getRounded(rightLabel , decimalPlaceLength, roundOff))
 .style('font-family', 'open_sansregular')
 .style('font-weight', 'normal');
 
@@ -644,14 +725,12 @@ if(config.showBottomLabel !== undefined && config.showBottomLabel==true && data.
     .each(function(d,i) 
     {
          bottomTxtWidth = this.getComputedTextLength()
-       // console.log("Bottom Text Width at " +i + " Is " + bottomTxtWidth);
-       // bottomTxtWidth = bottomTxtWidth;
+        // bottomTxtWidth = bottomTxtWidth;
         this.remove() // remove them just after displaying them
     });
   // TEXT WIDTH CALCULATION ENDS 
 
-    //console.log("OutSide Bottom Text Width at " +i + " Is " + bottomTxtWidth);
-
+ 
     divElement.append('text')
     .attr('x', -bottomTxtWidth/2   )
     .attr('y', holoRadius + bottomLabelOffsetY)
@@ -676,6 +755,7 @@ if(config.showBottomLabel !== undefined && config.showBottomLabel==true && data.
 
 function defineShadowFilter(divElement)
 {
+    divElement.selectAll("defs").remove("defs");
     var defs = divElement.append("defs");
     
     
@@ -736,23 +816,29 @@ function isDataValid(data)
    // if(data.upperBound != undefined && data.upperBound==null)
     if( (data.upperBound != undefined) && (data.upperBound == 'null') || (data.upperBound == null) )
     {
+        //console.log("Issue with UpperBound");
         return false;
     }
 
     //if ((data.lowerBound) != undefined && ((data.lowerBound === 'null') || (data.lowerBound === null)) )
     if( (data.lowerBound != undefined) && (data.lowerBound == 'null') || (data.lowerBound == null) )
     {
+        //console.log("Issue with LowerBound");
         return false;
     }
 
     return true;
 }
 
-function getRounded(string)
+function getRounded(string , decPlaces , isRoundOff)
 {
     var str = string + "";
   try
   {
+      if(isRoundOff == true)
+      {
+          return Math.round(string);
+      }
        
        var idx = str.indexOf(".");
        if(idx== -1)
@@ -765,13 +851,13 @@ function getRounded(string)
           secondPart = secondPart.replace("." , "");
           if(secondPart.length > 1)
           {
-            secondPart = secondPart.substring(0,1);
+            //secondPart = secondPart.substring(0,1);
+            secondPart = secondPart.substring(0,decPlaces);
           }
           return firstPart + "."+ secondPart;
        }
   }catch(error)
   {
-    //  console.log("Error printing " + str + " error : "  + error );
-    return str; 
+     return str; 
   }
 }
